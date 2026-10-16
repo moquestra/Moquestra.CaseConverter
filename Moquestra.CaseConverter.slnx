@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Moquestra.CaseConverter/Moquestra.CaseConverter.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Moquestra.CaseConverter.Tests/Moquestra.CaseConverter.Tests.csproj" />
+  </Folder>
+</Solution>
