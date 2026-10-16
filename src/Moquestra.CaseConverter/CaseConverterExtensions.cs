@@ -34,8 +34,8 @@ namespace Moquestra.CaseConverter
                 if (IsLetterOrDigit(category))
                 {
                     result.Append(wordStart || IsWordBoundary(value, index, previousCategory, category)
-                        ? char.ToUpperInvariant(character)
-                        : char.ToLowerInvariant(character));
+                        ? ToUpperInvariant(character, category)
+                        : ToLowerInvariant(character, category));
 
                     wordStart = false;
                 }
@@ -79,8 +79,8 @@ namespace Moquestra.CaseConverter
                 if (IsLetterOrDigit(category))
                 {
                     result.Append((wordStart || IsWordBoundary(value, index, previousCategory, category)) && !firstWord
-                        ? char.ToUpperInvariant(character)
-                        : char.ToLowerInvariant(character));
+                        ? ToUpperInvariant(character, category)
+                        : ToLowerInvariant(character, category));
 
                     wordStart = false;
                     firstWord = false;
@@ -130,7 +130,7 @@ namespace Moquestra.CaseConverter
                         result.Append('_');
                     }
 
-                    result.Append(char.ToLowerInvariant(character));
+                    result.Append(ToLowerInvariant(character, category));
                     wordStart = false;
                     previousWasWord = true;
                 }
@@ -149,6 +149,20 @@ namespace Moquestra.CaseConverter
             }
 
             return result.ToString();
+        }
+
+        private static char ToUpperInvariant(char value, UnicodeCategory category)
+        {
+            return category == UnicodeCategory.UppercaseLetter || category == UnicodeCategory.DecimalDigitNumber
+                ? value
+                : char.ToUpperInvariant(value);
+        }
+
+        private static char ToLowerInvariant(char value, UnicodeCategory category)
+        {
+            return category == UnicodeCategory.LowercaseLetter || category == UnicodeCategory.DecimalDigitNumber
+                ? value
+                : char.ToLowerInvariant(value);
         }
 
         private static bool IsLetterOrDigit(UnicodeCategory category)
