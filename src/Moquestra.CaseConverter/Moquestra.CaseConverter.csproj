@@ -7,4 +7,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>Moquestra.CaseConverter</PackageId>
+    <Description>A string extension library for PascalCase, camelCase, and snake_case conversion.</Description>
+    <PackageTags>string;casing;case-converter;pascalcase;camelcase;snake-case</PackageTags>
+  </PropertyGroup>
+
 </Project>
