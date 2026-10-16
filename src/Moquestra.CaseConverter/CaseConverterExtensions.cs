@@ -8,13 +8,6 @@ namespace Moquestra.CaseConverter
     /// </summary>
     public static class CaseConverterExtensions
     {
-        private enum CharType
-        {
-            None,
-            Word,
-            Symbol,
-        }
-
         /// <summary>
         /// Converts a string to PascalCase.
         /// </summary>
@@ -29,25 +22,27 @@ namespace Moquestra.CaseConverter
                 throw new ArgumentNullException(nameof(value));
 
             var result = new StringBuilder(value.Length);
-            var index = 0;
+            var wordStart = true;
 
-            CharType charType;
-
-            while ((charType = FindWord(value, index, out var wordStart, out var wordEnd)) != CharType.None)
+            for (var index = 0; index < value.Length; index++)
             {
-                if (charType == CharType.Symbol)
+                var character = value[index];
+
+                if (char.IsLetterOrDigit(character))
                 {
-                    result.Append(value[wordStart]);
+                    result.Append(wordStart || IsWordBoundary(value, index)
+                        ? char.ToUpperInvariant(character)
+                        : char.ToLowerInvariant(character));
+
+                    wordStart = false;
                 }
                 else
                 {
-                    result.Append(char.ToUpperInvariant(value[wordStart]));
+                    if (!IsWordSeparator(character))
+                        result.Append(character);
 
-                    for (var characterIndex = wordStart + 1; characterIndex <= wordEnd; characterIndex++)
-                        result.Append(char.ToLowerInvariant(value[characterIndex]));
+                    wordStart = true;
                 }
-
-                index = wordEnd + 1;
             }
 
             return result.ToString();
@@ -67,30 +62,29 @@ namespace Moquestra.CaseConverter
                 throw new ArgumentNullException(nameof(value));
 
             var result = new StringBuilder(value.Length);
-            var index = 0;
             var firstWord = true;
+            var wordStart = true;
 
-            CharType charType;
-
-            while ((charType = FindWord(value, index, out var wordStart, out var wordEnd)) != CharType.None)
+            for (var index = 0; index < value.Length; index++)
             {
-                if (charType == CharType.Symbol)
+                var character = value[index];
+
+                if (char.IsLetterOrDigit(character))
                 {
-                    result.Append(value[wordStart]);
+                    result.Append((wordStart || IsWordBoundary(value, index)) && !firstWord
+                        ? char.ToUpperInvariant(character)
+                        : char.ToLowerInvariant(character));
+
+                    wordStart = false;
+                    firstWord = false;
                 }
                 else
                 {
-                    result.Append(firstWord
-                        ? char.ToLowerInvariant(value[wordStart])
-                        : char.ToUpperInvariant(value[wordStart]));
+                    if (!IsWordSeparator(character))
+                        result.Append(character);
 
-                    for (var characterIndex = wordStart + 1; characterIndex <= wordEnd; characterIndex++)
-                        result.Append(char.ToLowerInvariant(value[characterIndex]));
-
-                    firstWord = false;
+                    wordStart = true;
                 }
-
-                index = wordEnd + 1;
             }
 
             return result.ToString();
@@ -110,77 +104,51 @@ namespace Moquestra.CaseConverter
                 throw new ArgumentNullException(nameof(value));
 
             var result = new StringBuilder(value.Length);
-            var index = 0;
             var previousWasWord = false;
+            var wordStart = true;
 
-            CharType charType;
-
-            while ((charType = FindWord(value, index, out var wordStart, out var wordEnd)) != CharType.None)
+            for (var index = 0; index < value.Length; index++)
             {
-                if (charType == CharType.Symbol)
+                var character = value[index];
+
+                if (char.IsLetterOrDigit(character))
                 {
-                    result.Append(value[wordStart]);
-                    previousWasWord = false;
+                    if (previousWasWord &&
+                        (wordStart || IsWordBoundary(value, index) && !char.IsDigit(value[index - 1])))
+                    {
+                        result.Append('_');
+                    }
+
+                    result.Append(char.ToLowerInvariant(character));
+                    wordStart = false;
+                    previousWasWord = true;
                 }
                 else
                 {
-                    if (previousWasWord)
+                    if (!IsWordSeparator(character))
                     {
-                        var followsDigit = wordStart == index && char.IsDigit(value[wordStart - 1]);
-
-                        if (!followsDigit)
-                            result.Append('_');
+                        result.Append(character);
+                        previousWasWord = false;
                     }
 
-                    for (var characterIndex = wordStart; characterIndex <= wordEnd; characterIndex++)
-                        result.Append(char.ToLowerInvariant(value[characterIndex]));
-
-                    previousWasWord = true;
+                    wordStart = true;
                 }
-
-                index = wordEnd + 1;
             }
 
             return result.ToString();
         }
 
-        private static CharType FindWord(string value, int start, out int wordStart, out int wordEnd)
+        private static bool IsWordBoundary(string value, int index)
         {
-            var index = start;
+            if (!char.IsUpper(value[index]))
+                return false;
 
-            while (index < value.Length && IsWordSeparator(value[index]))
-                index++;
+            var previous = value[index - 1];
 
-            wordStart = index;
-            wordEnd = index;
+            if (char.IsLower(previous) || char.IsDigit(previous))
+                return true;
 
-            if (index == value.Length)
-                return CharType.None;
-
-            if (!char.IsLetterOrDigit(value[index]))
-                return CharType.Symbol;
-
-            index++;
-
-            while (index < value.Length && char.IsLetterOrDigit(value[index]))
-            {
-                if (char.IsUpper(value[index]))
-                {
-                    var previous = value[index - 1];
-
-                    if (char.IsLower(previous) || char.IsDigit(previous))
-                        break;
-
-                    if (char.IsUpper(previous) && index + 1 < value.Length && char.IsLower(value[index + 1]))
-                        break;
-                }
-
-                index++;
-            }
-
-            wordEnd = index - 1;
-
-            return CharType.Word;
+            return char.IsUpper(previous) && index + 1 < value.Length && char.IsLower(value[index + 1]);
         }
 
         private static bool IsWordSeparator(char value)
