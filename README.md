@@ -3,7 +3,7 @@
 [![Build and test](https://github.com/moquestra/Moquestra.CaseConverter/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/moquestra/Moquestra.CaseConverter/actions/workflows/build-and-test.yml)
 [![NuGet](https://img.shields.io/nuget/v/Moquestra.CaseConverter)](https://www.nuget.org/packages/Moquestra.CaseConverter/)
 
-A string extension library for PascalCase, camelCase, and snake_case conversion.
+A string extension library for casing conversion.
 
 ## Usage
 
@@ -20,22 +20,44 @@ var values = new[]
 
 foreach (var value in values)
 {
-    Console.WriteLine($"{value.ToPascalCase()}, {value.ToCamelCase()}, {value.ToSnakeCase()}");
+    Console.WriteLine(value);
+    Console.WriteLine(value.ToPascalCase());
+    Console.WriteLine(value.ToCamelCase());
+    Console.WriteLine(value.ToSnakeCase());
+    Console.WriteLine(value.ToKebabCase());
+    Console.WriteLine(value.ToScreamingSnakeCase());
+    Console.WriteLine(value.ToCobolCase());
+    Console.WriteLine(value.ToHeaderCase());
+    Console.WriteLine(value.ToTitleCase());
+    Console.WriteLine(value.ToTrainCase());
+    Console.WriteLine(value.ToSentenceCase());
+    Console.WriteLine(value.ToFlatCase());
 }
 ```
 
-Output (PascalCase, camelCase, snake_case):
+Results for each input:
 
-```
-UserId, userId, user_id
-User+Id, user+Id, user+id
-HttpServer, httpServer, http_server
-Xml2JsonParser, xml2JsonParser, xml2json_parser
-```
+| Method | `UserID` | `User+Id` | `HTTPServer` | `XML2JsonParser` |
+|---|---|---|---|---|
+| `ToPascalCase()` | `UserId` | `User+Id` | `HttpServer` | `Xml2JsonParser` |
+| `ToCamelCase()` | `userId` | `user+Id` | `httpServer` | `xml2JsonParser` |
+| `ToSnakeCase()` | `user_id` | `user+id` | `http_server` | `xml2json_parser` |
+| `ToKebabCase()` | `user-id` | `user+id` | `http-server` | `xml2json-parser` |
+| `ToScreamingSnakeCase()` | `USER_ID` | `USER+ID` | `HTTP_SERVER` | `XML2JSON_PARSER` |
+| `ToCobolCase()` | `USER-ID` | `USER+ID` | `HTTP-SERVER` | `XML2JSON-PARSER` |
+| `ToHeaderCase()` | `User-Id` | `User+Id` | `Http-Server` | `Xml2Json-Parser` |
+| `ToTitleCase()` | `User Id` | `User+Id` | `Http Server` | `Xml2Json Parser` |
+| `ToTrainCase()` | `User-id` | `User+id` | `Http-server` | `Xml2json-parser` |
+| `ToSentenceCase()` | `User id` | `User+id` | `Http server` | `Xml2json parser` |
+| `ToFlatCase()` | `userid` | `user+id` | `httpserver` | `xml2jsonparser` |
 
 - `ToPascalCase()` capitalizes the first character of each word, lowercases the rest, and joins the words.
 - `ToCamelCase()` joins words in lowercase, capitalizing the first character of each word after the first.
-- `ToSnakeCase()` joins lowercase words with underscores.
+- `ToSnakeCase()` and `ToKebabCase()` join lowercase words with underscores and hyphens, respectively.
+- `ToScreamingSnakeCase()` and `ToCobolCase()` join uppercase words with underscores and hyphens, respectively.
+- `ToHeaderCase()` and `ToTitleCase()` capitalize the first character of each word, lowercase the rest, and join words with hyphens and spaces, respectively.
+- `ToTrainCase()` and `ToSentenceCase()` capitalize only the first character of the first word, lowercase the rest, and join words with hyphens and spaces, respectively.
+- `ToFlatCase()` joins lowercase words without separators.
 
 ### Word boundaries
 
@@ -45,7 +67,7 @@ Words are separated by explicit separators and casing changes.
 - Repeated separators are collapsed, and leading and trailing separators are removed.
 - An uppercase letter starts a new word after a lowercase letter or decimal digit.
 - Acronyms are split before the uppercase letter that begins the next word.
-- snake_case skips the underscore before a word immediately following a digit, unless an explicit separator is present.
+- Formats with output separators skip the separator before a word immediately following a digit, unless an explicit separator is present.
 
 For example, `XML2JsonParser` splits into `XML2`, `Json`, and `Parser`:
 
@@ -59,7 +81,7 @@ Casing conversions use invariant rules, independent of the current culture.
 
 - Acronyms and brand names are normalized like ordinary words.
 - Symbols such as `.` and `+` are preserved, with no separators added next to them.
-- camelCase determines the first word across the entire input.
+- camelCase, Train-case, and Sentence case determine the first word across the entire input.
 
 | Input | PascalCase | camelCase | snake_case |
 |---|---|---|---|
