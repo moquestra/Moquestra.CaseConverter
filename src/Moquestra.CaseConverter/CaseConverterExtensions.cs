@@ -109,7 +109,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToSnakeCase(this string value)
         {
-            return ConvertCaseCore(value, '_', false);
+            return ConvertCaseCore(value, '_', WordCasing.Lower);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToKebabCase(this string value)
         {
-            return ConvertCaseCore(value, '-', false);
+            return ConvertCaseCore(value, '-', WordCasing.Lower);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToScreamingSnakeCase(this string value)
         {
-            return ConvertCaseCore(value, '_', true);
+            return ConvertCaseCore(value, '_', WordCasing.Upper);
         }
 
         /// <summary>
@@ -148,10 +148,36 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToCobolCase(this string value)
         {
-            return ConvertCaseCore(value, '-', true);
+            return ConvertCaseCore(value, '-', WordCasing.Upper);
         }
 
-        private static string ConvertCaseCore(string value, char separator, bool upperCase)
+        /// <summary>
+        /// Converts a string to Header-Case.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <returns>
+        /// The converted string, or an empty string if the input is empty or contains only whitespace, underscores, or hyphens.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static string ToHeaderCase(this string value)
+        {
+            return ConvertCaseCore(value, '-', WordCasing.InitialUpper);
+        }
+
+        /// <summary>
+        /// Converts a string to Title Case.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <returns>
+        /// The converted string, or an empty string if the input is empty or contains only whitespace, underscores, or hyphens.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static string ToTitleCase(this string value)
+        {
+            return ConvertCaseCore(value, ' ', WordCasing.InitialUpper);
+        }
+
+        private static string ConvertCaseCore(string value, char separator, WordCasing casing)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -168,11 +194,13 @@ namespace Moquestra.CaseConverter
 
                 if (IsLetterOrDigit(category))
                 {
-                    if ((wordStart || (IsWordBoundary(value, index, previousCategory, category) && previousCategory != UnicodeCategory.DecimalDigitNumber)) &&
-                        previousWasWord)
-                    {
+                    var isWordStart = wordStart || IsWordBoundary(value, index, previousCategory, category);
+
+                    if (isWordStart && previousCategory != UnicodeCategory.DecimalDigitNumber && previousWasWord)
                         result.Append(separator);
-                    }
+
+                    var upperCase = casing == WordCasing.Upper ||
+                        (casing == WordCasing.InitialUpper && isWordStart);
 
                     result.Append(upperCase
                         ? ToUpperInvariant(character, category)
@@ -244,6 +272,13 @@ namespace Moquestra.CaseConverter
         private static bool IsWordSeparator(char value)
         {
             return value == '_' || value == '-' || char.IsWhiteSpace(value);
+        }
+
+        private enum WordCasing
+        {
+            Lower,
+            Upper,
+            InitialUpper,
         }
     }
 }
