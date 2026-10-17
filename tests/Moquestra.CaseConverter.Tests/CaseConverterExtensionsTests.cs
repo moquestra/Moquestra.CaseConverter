@@ -8,18 +8,18 @@ namespace Moquestra.CaseConverter.Tests
     public class CaseConverterExtensionsTests
     {
         [Theory]
-        [InlineData("MY-DATA-OUTPUT", "MyDataOutput", "myDataOutput", "my_data_output", "my-data-output", "MY_DATA_OUTPUT", "MY-DATA-OUTPUT")]
-        [InlineData("42user_name", "42userName", "42userName", "42user_name", "42user-name", "42USER_NAME", "42USER-NAME")]
-        [InlineData("USER_LOGIN_COUNT", "UserLoginCount", "userLoginCount", "user_login_count", "user-login-count", "USER_LOGIN_COUNT", "USER-LOGIN-COUNT")]
-        [InlineData("UserID", "UserId", "userId", "user_id", "user-id", "USER_ID", "USER-ID")]
-        [InlineData("HTTPServer", "HttpServer", "httpServer", "http_server", "http-server", "HTTP_SERVER", "HTTP-SERVER")]
-        [InlineData("XML2Value", "Xml2Value", "xml2Value", "xml2value", "xml2value", "XML2VALUE", "XML2VALUE")]
-        [InlineData("XML2JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2json_parser", "xml2json-parser", "XML2JSON_PARSER", "XML2JSON-PARSER")]
-        [InlineData("XML2_JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2_json_parser", "xml2-json-parser", "XML2_JSON_PARSER", "XML2-JSON-PARSER")]
-        [InlineData("version42beta", "Version42beta", "version42beta", "version42beta", "version42beta", "VERSION42BETA", "VERSION42BETA")]
-        [InlineData("user__name", "UserName", "userName", "user_name", "user-name", "USER_NAME", "USER-NAME")]
-        [InlineData("user+ID", "User+Id", "user+Id", "user+id", "user+id", "USER+ID", "USER+ID")]
-        public void Conversions_WordBoundaries_ReturnExpectedCasing(string value, string expectedPascal, string expectedCamel, string expectedSnake, string expectedKebab, string expectedScreamingSnake, string expectedCobol)
+        [InlineData("MY-DATA-OUTPUT", "MyDataOutput", "myDataOutput", "my_data_output", "my-data-output", "MY_DATA_OUTPUT", "MY-DATA-OUTPUT", "My-Data-Output", "My Data Output")]
+        [InlineData("42user_name", "42userName", "42userName", "42user_name", "42user-name", "42USER_NAME", "42USER-NAME", "42user-Name", "42user Name")]
+        [InlineData("USER_LOGIN_COUNT", "UserLoginCount", "userLoginCount", "user_login_count", "user-login-count", "USER_LOGIN_COUNT", "USER-LOGIN-COUNT", "User-Login-Count", "User Login Count")]
+        [InlineData("UserID", "UserId", "userId", "user_id", "user-id", "USER_ID", "USER-ID", "User-Id", "User Id")]
+        [InlineData("HTTPServer", "HttpServer", "httpServer", "http_server", "http-server", "HTTP_SERVER", "HTTP-SERVER", "Http-Server", "Http Server")]
+        [InlineData("XML2Value", "Xml2Value", "xml2Value", "xml2value", "xml2value", "XML2VALUE", "XML2VALUE", "Xml2Value", "Xml2Value")]
+        [InlineData("XML2JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2json_parser", "xml2json-parser", "XML2JSON_PARSER", "XML2JSON-PARSER", "Xml2Json-Parser", "Xml2Json Parser")]
+        [InlineData("XML2_JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2_json_parser", "xml2-json-parser", "XML2_JSON_PARSER", "XML2-JSON-PARSER", "Xml2-Json-Parser", "Xml2 Json Parser")]
+        [InlineData("version42beta", "Version42beta", "version42beta", "version42beta", "version42beta", "VERSION42BETA", "VERSION42BETA", "Version42beta", "Version42beta")]
+        [InlineData("user__name", "UserName", "userName", "user_name", "user-name", "USER_NAME", "USER-NAME", "User-Name", "User Name")]
+        [InlineData("user+ID", "User+Id", "user+Id", "user+id", "user+id", "USER+ID", "USER+ID", "User+Id", "User+Id")]
+        public void Conversions_WordBoundaries_ReturnExpectedCasing(string value, string expectedPascal, string expectedCamel, string expectedSnake, string expectedKebab, string expectedScreamingSnake, string expectedCobol, string expectedHeader, string expectedTitle)
         {
             var pascal = value.ToPascalCase();
             var camel = value.ToCamelCase();
@@ -27,6 +27,8 @@ namespace Moquestra.CaseConverter.Tests
             var kebab = value.ToKebabCase();
             var screamingSnake = value.ToScreamingSnakeCase();
             var cobol = value.ToCobolCase();
+            var header = value.ToHeaderCase();
+            var title = value.ToTitleCase();
 
             Assert.Equal(expectedPascal, pascal);
             Assert.Equal(expectedCamel, camel);
@@ -34,6 +36,8 @@ namespace Moquestra.CaseConverter.Tests
             Assert.Equal(expectedKebab, kebab);
             Assert.Equal(expectedScreamingSnake, screamingSnake);
             Assert.Equal(expectedCobol, cobol);
+            Assert.Equal(expectedHeader, header);
+            Assert.Equal(expectedTitle, title);
         }
 
         [Fact]
@@ -51,6 +55,8 @@ namespace Moquestra.CaseConverter.Tests
                 var kebab = "INPUT_id".ToKebabCase();
                 var screamingSnake = "INPUT_id".ToScreamingSnakeCase();
                 var cobol = "INPUT_id".ToCobolCase();
+                var header = "INPUT_id".ToHeaderCase();
+                var title = "INPUT_id".ToTitleCase();
 
                 Assert.Equal("InputId", pascal);
                 Assert.Equal("inputId", camel);
@@ -58,6 +64,8 @@ namespace Moquestra.CaseConverter.Tests
                 Assert.Equal("input-id", kebab);
                 Assert.Equal("INPUT_ID", screamingSnake);
                 Assert.Equal("INPUT-ID", cobol);
+                Assert.Equal("Input-Id", header);
+                Assert.Equal("Input Id", title);
             }
             finally
             {
@@ -76,6 +84,8 @@ namespace Moquestra.CaseConverter.Tests
             var kebab = value.ToKebabCase();
             var screamingSnake = value.ToScreamingSnakeCase();
             var cobol = value.ToCobolCase();
+            var header = value.ToHeaderCase();
+            var title = value.ToTitleCase();
 
             Assert.Empty(pascal);
             Assert.Empty(camel);
@@ -83,6 +93,8 @@ namespace Moquestra.CaseConverter.Tests
             Assert.Empty(kebab);
             Assert.Empty(screamingSnake);
             Assert.Empty(cobol);
+            Assert.Empty(header);
+            Assert.Empty(title);
         }
 
         [Fact]
@@ -94,6 +106,8 @@ namespace Moquestra.CaseConverter.Tests
             var kebab = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToKebabCase());
             var screamingSnake = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToScreamingSnakeCase());
             var cobol = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToCobolCase());
+            var header = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToHeaderCase());
+            var title = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToTitleCase());
 
             Assert.Equal("value", pascal.ParamName);
             Assert.Equal("value", camel.ParamName);
@@ -101,6 +115,8 @@ namespace Moquestra.CaseConverter.Tests
             Assert.Equal("value", kebab.ParamName);
             Assert.Equal("value", screamingSnake.ParamName);
             Assert.Equal("value", cobol.ParamName);
+            Assert.Equal("value", header.ParamName);
+            Assert.Equal("value", title.ParamName);
         }
     }
 }
