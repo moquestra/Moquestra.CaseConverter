@@ -9,8 +9,8 @@
 
   <PropertyGroup>
     <PackageId>Moquestra.CaseConverter</PackageId>
-    <Description>A string extension library for PascalCase, camelCase, and snake_case conversion.</Description>
-    <PackageTags>string;casing;case-converter;pascalcase;camelcase;snake-case</PackageTags>
+    <Description>A string extension library for casing conversion.</Description>
+    <PackageTags>string;casing;case-converter;pascalcase;camelcase;snake-case;kebab-case;screaming-snake-case;cobol-case;header-case;title-case;train-case;sentence-case;flatcase</PackageTags>
   </PropertyGroup>
 
 </Project>
