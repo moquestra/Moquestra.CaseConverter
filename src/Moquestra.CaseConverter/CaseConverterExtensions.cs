@@ -177,6 +177,32 @@ namespace Moquestra.CaseConverter
             return ConvertCaseCore(value, ' ', WordCasing.InitialUpper);
         }
 
+        /// <summary>
+        /// Converts a string to Train-case.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <returns>
+        /// The converted string, or an empty string if the input is empty or contains only whitespace, underscores, or hyphens.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static string ToTrainCase(this string value)
+        {
+            return ConvertCaseCore(value, '-', WordCasing.FirstWordInitialUpper);
+        }
+
+        /// <summary>
+        /// Converts a string to Sentence case.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <returns>
+        /// The converted string, or an empty string if the input is empty or contains only whitespace, underscores, or hyphens.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static string ToSentenceCase(this string value)
+        {
+            return ConvertCaseCore(value, ' ', WordCasing.FirstWordInitialUpper);
+        }
+
         private static string ConvertCaseCore(string value, char separator, WordCasing casing)
         {
             if (value is null)
@@ -184,6 +210,7 @@ namespace Moquestra.CaseConverter
 
             var result = new StringBuilder(value.Length);
             var previousWasWord = false;
+            var firstWord = true;
             var wordStart = true;
             var previousCategory = UnicodeCategory.OtherNotAssigned;
 
@@ -200,7 +227,8 @@ namespace Moquestra.CaseConverter
                         result.Append(separator);
 
                     var upperCase = casing == WordCasing.Upper ||
-                        (casing == WordCasing.InitialUpper && isWordStart);
+                        (casing == WordCasing.InitialUpper && isWordStart) ||
+                        (casing == WordCasing.FirstWordInitialUpper && firstWord);
 
                     result.Append(upperCase
                         ? ToUpperInvariant(character, category)
@@ -208,6 +236,7 @@ namespace Moquestra.CaseConverter
 
                     wordStart = false;
                     previousWasWord = true;
+                    firstWord = false;
                 }
                 else
                 {
@@ -279,6 +308,7 @@ namespace Moquestra.CaseConverter
             Lower,
             Upper,
             InitialUpper,
+            FirstWordInitialUpper,
         }
     }
 }
