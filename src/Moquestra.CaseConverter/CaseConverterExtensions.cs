@@ -109,6 +109,50 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToSnakeCase(this string value)
         {
+            return ConvertCaseCore(value, '_', false);
+        }
+
+        /// <summary>
+        /// Converts a string to kebab-case.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <returns>
+        /// The converted string, or an empty string if the input is empty or contains only whitespace, underscores, or hyphens.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static string ToKebabCase(this string value)
+        {
+            return ConvertCaseCore(value, '-', false);
+        }
+
+        /// <summary>
+        /// Converts a string to SCREAMING_SNAKE_CASE.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <returns>
+        /// The converted string, or an empty string if the input is empty or contains only whitespace, underscores, or hyphens.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static string ToScreamingSnakeCase(this string value)
+        {
+            return ConvertCaseCore(value, '_', true);
+        }
+
+        /// <summary>
+        /// Converts a string to COBOL-CASE.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <returns>
+        /// The converted string, or an empty string if the input is empty or contains only whitespace, underscores, or hyphens.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static string ToCobolCase(this string value)
+        {
+            return ConvertCaseCore(value, '-', true);
+        }
+
+        private static string ConvertCaseCore(string value, char separator, bool upperCase)
+        {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
 
@@ -127,10 +171,13 @@ namespace Moquestra.CaseConverter
                     if ((wordStart || (IsWordBoundary(value, index, previousCategory, category) && previousCategory != UnicodeCategory.DecimalDigitNumber)) &&
                         previousWasWord)
                     {
-                        result.Append('_');
+                        result.Append(separator);
                     }
 
-                    result.Append(ToLowerInvariant(character, category));
+                    result.Append(upperCase
+                        ? ToUpperInvariant(character, category)
+                        : ToLowerInvariant(character, category));
+
                     wordStart = false;
                     previousWasWord = true;
                 }
