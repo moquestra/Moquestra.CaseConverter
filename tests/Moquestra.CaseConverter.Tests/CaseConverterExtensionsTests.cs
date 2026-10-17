@@ -8,18 +8,18 @@ namespace Moquestra.CaseConverter.Tests
     public class CaseConverterExtensionsTests
     {
         [Theory]
-        [InlineData("MY-DATA-OUTPUT", "MyDataOutput", "myDataOutput", "my_data_output", "my-data-output", "MY_DATA_OUTPUT", "MY-DATA-OUTPUT", "My-Data-Output", "My Data Output", "My-data-output", "My data output")]
-        [InlineData("42user_name", "42userName", "42userName", "42user_name", "42user-name", "42USER_NAME", "42USER-NAME", "42user-Name", "42user Name", "42user-name", "42user name")]
-        [InlineData("USER_LOGIN_COUNT", "UserLoginCount", "userLoginCount", "user_login_count", "user-login-count", "USER_LOGIN_COUNT", "USER-LOGIN-COUNT", "User-Login-Count", "User Login Count", "User-login-count", "User login count")]
-        [InlineData("UserID", "UserId", "userId", "user_id", "user-id", "USER_ID", "USER-ID", "User-Id", "User Id", "User-id", "User id")]
-        [InlineData("HTTPServer", "HttpServer", "httpServer", "http_server", "http-server", "HTTP_SERVER", "HTTP-SERVER", "Http-Server", "Http Server", "Http-server", "Http server")]
-        [InlineData("XML2Value", "Xml2Value", "xml2Value", "xml2value", "xml2value", "XML2VALUE", "XML2VALUE", "Xml2Value", "Xml2Value", "Xml2value", "Xml2value")]
-        [InlineData("XML2JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2json_parser", "xml2json-parser", "XML2JSON_PARSER", "XML2JSON-PARSER", "Xml2Json-Parser", "Xml2Json Parser", "Xml2json-parser", "Xml2json parser")]
-        [InlineData("XML2_JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2_json_parser", "xml2-json-parser", "XML2_JSON_PARSER", "XML2-JSON-PARSER", "Xml2-Json-Parser", "Xml2 Json Parser", "Xml2-json-parser", "Xml2 json parser")]
-        [InlineData("version42beta", "Version42beta", "version42beta", "version42beta", "version42beta", "VERSION42BETA", "VERSION42BETA", "Version42beta", "Version42beta", "Version42beta", "Version42beta")]
-        [InlineData("user__name", "UserName", "userName", "user_name", "user-name", "USER_NAME", "USER-NAME", "User-Name", "User Name", "User-name", "User name")]
-        [InlineData("user+ID", "User+Id", "user+Id", "user+id", "user+id", "USER+ID", "USER+ID", "User+Id", "User+Id", "User+id", "User+id")]
-        public void Conversions_WordBoundaries_ReturnExpectedCasing(string value, string expectedPascal, string expectedCamel, string expectedSnake, string expectedKebab, string expectedScreamingSnake, string expectedCobol, string expectedHeader, string expectedTitle, string expectedTrain, string expectedSentence)
+        [InlineData("MY-DATA-OUTPUT", "MyDataOutput", "myDataOutput", "my_data_output", "my-data-output", "MY_DATA_OUTPUT", "MY-DATA-OUTPUT", "My-Data-Output", "My Data Output", "My-data-output", "My data output", "mydataoutput")]
+        [InlineData("42user_name", "42userName", "42userName", "42user_name", "42user-name", "42USER_NAME", "42USER-NAME", "42user-Name", "42user Name", "42user-name", "42user name", "42username")]
+        [InlineData("USER_LOGIN_COUNT", "UserLoginCount", "userLoginCount", "user_login_count", "user-login-count", "USER_LOGIN_COUNT", "USER-LOGIN-COUNT", "User-Login-Count", "User Login Count", "User-login-count", "User login count", "userlogincount")]
+        [InlineData("UserID", "UserId", "userId", "user_id", "user-id", "USER_ID", "USER-ID", "User-Id", "User Id", "User-id", "User id", "userid")]
+        [InlineData("HTTPServer", "HttpServer", "httpServer", "http_server", "http-server", "HTTP_SERVER", "HTTP-SERVER", "Http-Server", "Http Server", "Http-server", "Http server", "httpserver")]
+        [InlineData("XML2Value", "Xml2Value", "xml2Value", "xml2value", "xml2value", "XML2VALUE", "XML2VALUE", "Xml2Value", "Xml2Value", "Xml2value", "Xml2value", "xml2value")]
+        [InlineData("XML2JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2json_parser", "xml2json-parser", "XML2JSON_PARSER", "XML2JSON-PARSER", "Xml2Json-Parser", "Xml2Json Parser", "Xml2json-parser", "Xml2json parser", "xml2jsonparser")]
+        [InlineData("XML2_JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2_json_parser", "xml2-json-parser", "XML2_JSON_PARSER", "XML2-JSON-PARSER", "Xml2-Json-Parser", "Xml2 Json Parser", "Xml2-json-parser", "Xml2 json parser", "xml2jsonparser")]
+        [InlineData("version42beta", "Version42beta", "version42beta", "version42beta", "version42beta", "VERSION42BETA", "VERSION42BETA", "Version42beta", "Version42beta", "Version42beta", "Version42beta", "version42beta")]
+        [InlineData("user__name", "UserName", "userName", "user_name", "user-name", "USER_NAME", "USER-NAME", "User-Name", "User Name", "User-name", "User name", "username")]
+        [InlineData("user+ID", "User+Id", "user+Id", "user+id", "user+id", "USER+ID", "USER+ID", "User+Id", "User+Id", "User+id", "User+id", "user+id")]
+        public void Conversions_WordBoundaries_ReturnExpectedCasing(string value, string expectedPascal, string expectedCamel, string expectedSnake, string expectedKebab, string expectedScreamingSnake, string expectedCobol, string expectedHeader, string expectedTitle, string expectedTrain, string expectedSentence, string expectedFlat)
         {
             var pascal = value.ToPascalCase();
             var camel = value.ToCamelCase();
@@ -31,6 +31,7 @@ namespace Moquestra.CaseConverter.Tests
             var title = value.ToTitleCase();
             var train = value.ToTrainCase();
             var sentence = value.ToSentenceCase();
+            var flat = value.ToFlatCase();
 
             Assert.Equal(expectedPascal, pascal);
             Assert.Equal(expectedCamel, camel);
@@ -42,6 +43,7 @@ namespace Moquestra.CaseConverter.Tests
             Assert.Equal(expectedTitle, title);
             Assert.Equal(expectedTrain, train);
             Assert.Equal(expectedSentence, sentence);
+            Assert.Equal(expectedFlat, flat);
         }
 
         [Fact]
@@ -63,6 +65,7 @@ namespace Moquestra.CaseConverter.Tests
                 var title = "INPUT_id".ToTitleCase();
                 var train = "INPUT_id".ToTrainCase();
                 var sentence = "INPUT_id".ToSentenceCase();
+                var flat = "INPUT_id".ToFlatCase();
 
                 Assert.Equal("InputId", pascal);
                 Assert.Equal("inputId", camel);
@@ -74,6 +77,7 @@ namespace Moquestra.CaseConverter.Tests
                 Assert.Equal("Input Id", title);
                 Assert.Equal("Input-id", train);
                 Assert.Equal("Input id", sentence);
+                Assert.Equal("inputid", flat);
             }
             finally
             {
@@ -96,6 +100,7 @@ namespace Moquestra.CaseConverter.Tests
             var title = value.ToTitleCase();
             var train = value.ToTrainCase();
             var sentence = value.ToSentenceCase();
+            var flat = value.ToFlatCase();
 
             Assert.Empty(pascal);
             Assert.Empty(camel);
@@ -107,6 +112,7 @@ namespace Moquestra.CaseConverter.Tests
             Assert.Empty(title);
             Assert.Empty(train);
             Assert.Empty(sentence);
+            Assert.Empty(flat);
         }
 
         [Fact]
@@ -122,6 +128,7 @@ namespace Moquestra.CaseConverter.Tests
             var title = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToTitleCase());
             var train = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToTrainCase());
             var sentence = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToSentenceCase());
+            var flat = Assert.Throws<ArgumentNullException>(() => ((string)null!).ToFlatCase());
 
             Assert.Equal("value", pascal.ParamName);
             Assert.Equal("value", camel.ParamName);
@@ -133,6 +140,7 @@ namespace Moquestra.CaseConverter.Tests
             Assert.Equal("value", title.ParamName);
             Assert.Equal("value", train.ParamName);
             Assert.Equal("value", sentence.ParamName);
+            Assert.Equal("value", flat.ParamName);
         }
     }
 }

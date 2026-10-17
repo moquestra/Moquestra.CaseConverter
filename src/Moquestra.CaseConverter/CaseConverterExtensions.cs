@@ -19,38 +19,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToPascalCase(this string value)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
-
-            var result = new StringBuilder(value.Length);
-            var wordStart = true;
-            var previousCategory = UnicodeCategory.OtherNotAssigned;
-
-            for (var index = 0; index < value.Length; index++)
-            {
-                var character = value[index];
-                var category = char.GetUnicodeCategory(character);
-
-                if (IsLetterOrDigit(category))
-                {
-                    result.Append(wordStart || IsWordBoundary(value, index, previousCategory, category)
-                        ? ToUpperInvariant(character, category)
-                        : ToLowerInvariant(character, category));
-
-                    wordStart = false;
-                }
-                else
-                {
-                    if (!IsWordSeparator(character))
-                        result.Append(character);
-
-                    wordStart = true;
-                }
-
-                previousCategory = category;
-            }
-
-            return result.ToString();
+            return ConvertCaseCore(value, WordCasing.InitialUpper);
         }
 
         /// <summary>
@@ -63,40 +32,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToCamelCase(this string value)
         {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
-
-            var result = new StringBuilder(value.Length);
-            var firstWord = true;
-            var wordStart = true;
-            var previousCategory = UnicodeCategory.OtherNotAssigned;
-
-            for (var index = 0; index < value.Length; index++)
-            {
-                var character = value[index];
-                var category = char.GetUnicodeCategory(character);
-
-                if (IsLetterOrDigit(category))
-                {
-                    result.Append((wordStart || IsWordBoundary(value, index, previousCategory, category)) && !firstWord
-                        ? ToUpperInvariant(character, category)
-                        : ToLowerInvariant(character, category));
-
-                    wordStart = false;
-                    firstWord = false;
-                }
-                else
-                {
-                    if (!IsWordSeparator(character))
-                        result.Append(character);
-
-                    wordStart = true;
-                }
-
-                previousCategory = category;
-            }
-
-            return result.ToString();
+            return ConvertCaseCore(value, WordCasing.FirstWordInitialLower);
         }
 
         /// <summary>
@@ -109,7 +45,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToSnakeCase(this string value)
         {
-            return ConvertCaseCore(value, '_', WordCasing.Lower);
+            return ConvertCaseCore(value, WordCasing.Lower, '_');
         }
 
         /// <summary>
@@ -122,7 +58,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToKebabCase(this string value)
         {
-            return ConvertCaseCore(value, '-', WordCasing.Lower);
+            return ConvertCaseCore(value, WordCasing.Lower, '-');
         }
 
         /// <summary>
@@ -135,7 +71,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToScreamingSnakeCase(this string value)
         {
-            return ConvertCaseCore(value, '_', WordCasing.Upper);
+            return ConvertCaseCore(value, WordCasing.Upper, '_');
         }
 
         /// <summary>
@@ -148,7 +84,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToCobolCase(this string value)
         {
-            return ConvertCaseCore(value, '-', WordCasing.Upper);
+            return ConvertCaseCore(value, WordCasing.Upper, '-');
         }
 
         /// <summary>
@@ -161,7 +97,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToHeaderCase(this string value)
         {
-            return ConvertCaseCore(value, '-', WordCasing.InitialUpper);
+            return ConvertCaseCore(value, WordCasing.InitialUpper, '-');
         }
 
         /// <summary>
@@ -174,7 +110,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToTitleCase(this string value)
         {
-            return ConvertCaseCore(value, ' ', WordCasing.InitialUpper);
+            return ConvertCaseCore(value, WordCasing.InitialUpper, ' ');
         }
 
         /// <summary>
@@ -187,7 +123,7 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToTrainCase(this string value)
         {
-            return ConvertCaseCore(value, '-', WordCasing.FirstWordInitialUpper);
+            return ConvertCaseCore(value, WordCasing.FirstWordInitialUpper, '-');
         }
 
         /// <summary>
@@ -200,13 +136,30 @@ namespace Moquestra.CaseConverter
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public static string ToSentenceCase(this string value)
         {
-            return ConvertCaseCore(value, ' ', WordCasing.FirstWordInitialUpper);
+            return ConvertCaseCore(value, WordCasing.FirstWordInitialUpper, ' ');
         }
 
-        private static string ConvertCaseCore(string value, char separator, WordCasing casing)
+        /// <summary>
+        /// Converts a string to flatcase.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <returns>
+        /// The converted string, or an empty string if the input is empty or contains only whitespace, underscores, or hyphens.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+        public static string ToFlatCase(this string value)
+        {
+            return ConvertCaseCore(value, WordCasing.Lower);
+        }
+
+        private static string ConvertCaseCore(string value, WordCasing casing, char? separator = null)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
+
+            var needsWordBoundary = separator.HasValue ||
+                casing == WordCasing.InitialUpper ||
+                casing == WordCasing.FirstWordInitialLower;
 
             var result = new StringBuilder(value.Length);
             var previousWasWord = false;
@@ -221,13 +174,14 @@ namespace Moquestra.CaseConverter
 
                 if (IsLetterOrDigit(category))
                 {
-                    var isWordStart = wordStart || IsWordBoundary(value, index, previousCategory, category);
+                    var isWordStart = needsWordBoundary && (wordStart || IsWordBoundary(value, index, previousCategory, category));
 
-                    if (isWordStart && previousCategory != UnicodeCategory.DecimalDigitNumber && previousWasWord)
-                        result.Append(separator);
+                    if (separator.HasValue && isWordStart && previousCategory != UnicodeCategory.DecimalDigitNumber && previousWasWord)
+                        result.Append(separator.Value);
 
                     var upperCase = casing == WordCasing.Upper ||
                         (casing == WordCasing.InitialUpper && isWordStart) ||
+                        (casing == WordCasing.FirstWordInitialLower && isWordStart && !firstWord) ||
                         (casing == WordCasing.FirstWordInitialUpper && firstWord);
 
                     result.Append(upperCase
@@ -308,6 +262,7 @@ namespace Moquestra.CaseConverter
             Lower,
             Upper,
             InitialUpper,
+            FirstWordInitialLower,
             FirstWordInitialUpper,
         }
     }
