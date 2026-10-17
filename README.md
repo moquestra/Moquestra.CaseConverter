@@ -1,5 +1,8 @@
 # Moquestra.CaseConverter
 
+[![Build and test](https://github.com/moquestra/Moquestra.CaseConverter/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/moquestra/Moquestra.CaseConverter/actions/workflows/build-and-test.yml)
+[![NuGet](https://img.shields.io/nuget/v/Moquestra.CaseConverter)](https://www.nuget.org/packages/Moquestra.CaseConverter/)
+
 A string extension library for PascalCase, camelCase, and snake_case conversion.
 
 ## Usage
