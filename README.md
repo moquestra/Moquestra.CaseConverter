@@ -35,21 +35,23 @@ foreach (var value in values)
 }
 ```
 
-Results for each input:
+Results with the default options:
 
 | Method | `UserID` | `User+Id` | `HTTPServer` | `XML2JsonParser` |
 |---|---|---|---|---|
-| `ToPascalCase()` | `UserId` | `User+Id` | `HttpServer` | `Xml2JsonParser` |
-| `ToCamelCase()` | `userId` | `user+Id` | `httpServer` | `xml2JsonParser` |
-| `ToSnakeCase()` | `user_id` | `user+id` | `http_server` | `xml2json_parser` |
-| `ToKebabCase()` | `user-id` | `user+id` | `http-server` | `xml2json-parser` |
-| `ToScreamingSnakeCase()` | `USER_ID` | `USER+ID` | `HTTP_SERVER` | `XML2JSON_PARSER` |
-| `ToCobolCase()` | `USER-ID` | `USER+ID` | `HTTP-SERVER` | `XML2JSON-PARSER` |
-| `ToHeaderCase()` | `User-Id` | `User+Id` | `Http-Server` | `Xml2Json-Parser` |
-| `ToTitleCase()` | `User Id` | `User+Id` | `Http Server` | `Xml2Json Parser` |
-| `ToTrainCase()` | `User-id` | `User+id` | `Http-server` | `Xml2json-parser` |
-| `ToSentenceCase()` | `User id` | `User+id` | `Http server` | `Xml2json parser` |
-| `ToFlatCase()` | `userid` | `user+id` | `httpserver` | `xml2jsonparser` |
+| `ToPascalCase()` | `UserId` | `UserId` | `HttpServer` | `Xml2JsonParser` |
+| `ToCamelCase()` | `userId` | `userId` | `httpServer` | `xml2JsonParser` |
+| `ToSnakeCase()` | `user_id` | `user_id` | `http_server` | `xml2json_parser` |
+| `ToKebabCase()` | `user-id` | `user-id` | `http-server` | `xml2json-parser` |
+| `ToScreamingSnakeCase()` | `USER_ID` | `USER_ID` | `HTTP_SERVER` | `XML2JSON_PARSER` |
+| `ToCobolCase()` | `USER-ID` | `USER-ID` | `HTTP-SERVER` | `XML2JSON-PARSER` |
+| `ToHeaderCase()` | `User-Id` | `User-Id` | `Http-Server` | `Xml2Json-Parser` |
+| `ToTitleCase()` | `User Id` | `User Id` | `Http Server` | `Xml2Json Parser` |
+| `ToTrainCase()` | `User-id` | `User-id` | `Http-server` | `Xml2json-parser` |
+| `ToSentenceCase()` | `User id` | `User id` | `Http server` | `Xml2json parser` |
+| `ToFlatCase()` | `userid` | `userid` | `httpserver` | `xml2jsonparser` |
+
+With the default options:
 
 - `ToPascalCase()` capitalizes the first character of each word, lowercases the rest, and joins the words.
 - `ToCamelCase()` joins words in lowercase, capitalizing the first character of each word after the first.
@@ -59,12 +61,38 @@ Results for each input:
 - `ToTrainCase()` and `ToSentenceCase()` capitalize only the first character of the first word, lowercase the rest, and join words with hyphens and spaces, respectively.
 - `ToFlatCase()` joins lowercase words without separators.
 
+### Separator preservation
+
+All conversion methods accept `SeparatorOptions` to specify where original separators are preserved.
+
+- `None` is the default and normalizes separators for the casing style.
+- `PreserveLeading`, `PreserveTrailing`, and `PreserveInner` preserve the type, count, and order of leading, trailing, and inner separators, respectively.
+- Combine options with `|`. Positions are determined from the original string, and no output separators are added next to preserved separators.
+
+```csharp
+var value = "__user__name__";
+var options = SeparatorOptions.PreserveLeading | SeparatorOptions.PreserveTrailing;
+
+Console.WriteLine(value.ToSnakeCase(options));
+```
+
+Results for the same input with each option:
+
+| Options | snake_case |
+|---|---|
+| `None` | `user_name` |
+| `PreserveLeading` | `__user_name` |
+| `PreserveTrailing` | `user_name__` |
+| `PreserveInner` | `user__name` |
+| `PreserveLeading \| PreserveTrailing` | `__user_name__` |
+| `PreserveLeading \| PreserveTrailing \| PreserveInner` | `__user__name__` |
+
 ### Word boundaries
 
 Words are separated by explicit separators and casing changes.
 
-- Underscores, hyphens, and whitespace (including tabs and line breaks) separate words.
-- Repeated separators are collapsed, and leading and trailing separators are removed.
+- Whitespace (including tabs and line breaks), punctuation, and symbols separate words. This includes underscores, hyphens, `.`, and `+`.
+- By default, inner separators are normalized for the casing style, and leading and trailing separators are removed.
 - An uppercase letter starts a new word after a lowercase letter or decimal digit.
 - Acronyms are split before the uppercase letter that begins the next word.
 - Formats with output separators skip the separator before a word immediately following a digit, unless an explicit separator is present.
@@ -80,8 +108,10 @@ For example, `XML2JsonParser` splits into `XML2`, `Json`, and `Parser`:
 Casing conversions use invariant rules, independent of the current culture.
 
 - Acronyms and brand names are normalized like ordinary words.
-- Symbols such as `.` and `+` are preserved, with no separators added next to them.
+- Preserving separators still applies the selected casing style to the words.
 - camelCase, Train-case, and Sentence case determine the first word across the entire input.
+
+Results with `SeparatorOptions.PreserveInner`:
 
 | Input | PascalCase | camelCase | snake_case |
 |---|---|---|---|
