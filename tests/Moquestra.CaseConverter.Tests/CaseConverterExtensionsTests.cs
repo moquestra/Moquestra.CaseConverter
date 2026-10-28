@@ -18,7 +18,7 @@ namespace Moquestra.CaseConverter.Tests
         [InlineData("XML2_JsonParser", "Xml2JsonParser", "xml2JsonParser", "xml2_json_parser", "xml2-json-parser", "XML2_JSON_PARSER", "XML2-JSON-PARSER", "Xml2-Json-Parser", "Xml2 Json Parser", "Xml2-json-parser", "Xml2 json parser", "xml2jsonparser")]
         [InlineData("version42beta", "Version42beta", "version42beta", "version42beta", "version42beta", "VERSION42BETA", "VERSION42BETA", "Version42beta", "Version42beta", "Version42beta", "Version42beta", "version42beta")]
         [InlineData("user__name", "UserName", "userName", "user_name", "user-name", "USER_NAME", "USER-NAME", "User-Name", "User Name", "User-name", "User name", "username")]
-        [InlineData("user+ID", "User+Id", "user+Id", "user+id", "user+id", "USER+ID", "USER+ID", "User+Id", "User+Id", "User+id", "User+id", "user+id")]
+        [InlineData("user+ID", "UserId", "userId", "user_id", "user-id", "USER_ID", "USER-ID", "User-Id", "User Id", "User-id", "User id", "userid")]
         public void Conversions_WordBoundaries_ReturnExpectedCasing(string value, string expectedPascal, string expectedCamel, string expectedSnake, string expectedKebab, string expectedScreamingSnake, string expectedCobol, string expectedHeader, string expectedTitle, string expectedTrain, string expectedSentence, string expectedFlat)
         {
             var pascal = value.ToPascalCase();
@@ -141,6 +141,63 @@ namespace Moquestra.CaseConverter.Tests
             Assert.Equal("value", train.ParamName);
             Assert.Equal("value", sentence.ParamName);
             Assert.Equal("value", flat.ParamName);
+        }
+
+        [Theory]
+        [InlineData("user.name", SeparatorOptions.None, "UserName", "userName", "user_name", "user-name", "USER_NAME", "USER-NAME", "User-Name", "User Name", "User-name", "User name", "username")]
+        [InlineData("user.name", SeparatorOptions.PreserveInner, "User.Name", "user.Name", "user.name", "user.name", "USER.NAME", "USER.NAME", "User.Name", "User.Name", "User.name", "User.name", "user.name")]
+        public void Conversions_SeparatorOptions_ReturnExpectedCasing(string value, SeparatorOptions options, string expectedPascal, string expectedCamel, string expectedSnake, string expectedKebab, string expectedScreamingSnake, string expectedCobol, string expectedHeader, string expectedTitle, string expectedTrain, string expectedSentence, string expectedFlat)
+        {
+            var pascal = value.ToPascalCase(options);
+            var camel = value.ToCamelCase(options);
+            var snake = value.ToSnakeCase(options);
+            var kebab = value.ToKebabCase(options);
+            var screamingSnake = value.ToScreamingSnakeCase(options);
+            var cobol = value.ToCobolCase(options);
+            var header = value.ToHeaderCase(options);
+            var title = value.ToTitleCase(options);
+            var train = value.ToTrainCase(options);
+            var sentence = value.ToSentenceCase(options);
+            var flat = value.ToFlatCase(options);
+
+            Assert.Equal(expectedPascal, pascal);
+            Assert.Equal(expectedCamel, camel);
+            Assert.Equal(expectedSnake, snake);
+            Assert.Equal(expectedKebab, kebab);
+            Assert.Equal(expectedScreamingSnake, screamingSnake);
+            Assert.Equal(expectedCobol, cobol);
+            Assert.Equal(expectedHeader, header);
+            Assert.Equal(expectedTitle, title);
+            Assert.Equal(expectedTrain, train);
+            Assert.Equal(expectedSentence, sentence);
+            Assert.Equal(expectedFlat, flat);
+        }
+
+        [Theory]
+        [InlineData("__user__name__", SeparatorOptions.None, "user_name")]
+        [InlineData("__user__name__", SeparatorOptions.PreserveLeading, "__user_name")]
+        [InlineData("__user__name__", SeparatorOptions.PreserveTrailing, "user_name__")]
+        [InlineData("__user__name__", SeparatorOptions.PreserveInner, "user__name")]
+        [InlineData("__user__name__", SeparatorOptions.PreserveLeading | SeparatorOptions.PreserveTrailing, "__user_name__")]
+        [InlineData("__user__name__", SeparatorOptions.PreserveLeading | SeparatorOptions.PreserveTrailing | SeparatorOptions.PreserveInner, "__user__name__")]
+        [InlineData("user__name", SeparatorOptions.PreserveInner, "user__name")]
+        [InlineData("user.+name", SeparatorOptions.PreserveInner, "user.+name")]
+        [InlineData("XML2.JsonParser", SeparatorOptions.None, "xml2_json_parser")]
+        [InlineData("XML2.JsonParser", SeparatorOptions.PreserveInner, "xml2.json_parser")]
+        [InlineData(" User Name ", SeparatorOptions.PreserveLeading | SeparatorOptions.PreserveTrailing | SeparatorOptions.PreserveInner, " user name ")]
+        public void ToSnakeCase_SeparatorOptions_ReturnExpectedCasing(string value, SeparatorOptions options, string expected)
+        {
+            var result = value.ToSnakeCase(options);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void ToSnakeCase_UndefinedOptions_ThrowsArgumentOutOfRangeException()
+        {
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() => "UserId".ToSnakeCase((SeparatorOptions)8));
+
+            Assert.Equal("options", exception.ParamName);
         }
     }
 }
